@@ -10,50 +10,26 @@ st.set_page_config(page_title="SafetyVision AI", page_icon="🪖")
 st.title("🪖 Real-time Construction Site Safety Monitor")
 st.markdown("Upload an image to detect helmets and people")
 
-# Download model from GitHub if not exists
-@st.cache_resource
-def download_model():
-    model_path = "best.pt"
-    if not os.path.exists(model_path):
-        with st.spinner("Downloading AI model... This may take a minute..."):
-            # Using a direct download link (you'll need to upload best.pt to GitHub Releases)
-            url = "https://github.com/Zaheenahamd78/safetyvision-helmet-detection/releases/download/v1.0/best.pt"
-            try:
-                response = requests.get(url, stream=True)
-                if response.status_code == 200:
-                    with open(model_path, "wb") as f:
-                        for chunk in response.iter_content(chunk_size=8192):
-                            f.write(chunk)
-                    st.success("✅ Model downloaded successfully!")
-                else:
-                    st.error("Model download failed. Please check GitHub Release.")
-                    return None
-            except:
-                st.error("Network error. Using fallback mode...")
-                return None
-    return model_path
-
-# Load model
+# Download model from GitHub release
 @st.cache_resource
 def load_model():
-    model_path = download_model()
-    if model_path and os.path.exists(model_path):
-        return YOLO(model_path)
-    else:
-        st.warning("⚠️ Using dummy model for demo")
-        return None
+    model_path = "best.pt"
+    if not os.path.exists(model_path):
+        with st.spinner("Downloading AI model..."):
+            url = "https://github.com/Zaheenahamd78/safetyvision-helmet-detection/releases/download/v1.0/best.pt"
+            response = requests.get(url)
+            with open(model_path, "wb") as f:
+                f.write(response.content)
+            st.success("✅ Model downloaded!")
+    return YOLO(model_path)
 
 model = load_model()
-
-if model:
-    st.success("✅ Model loaded successfully!")
-else:
-    st.info("ℹ️ Demo mode - Model not available")
+st.success("✅ Model loaded successfully!")
 
 # Upload image
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
-if uploaded_file is not None and model:
+if uploaded_file is not None:
     image = Image.open(uploaded_file)
     img_array = np.array(image)
     
@@ -78,4 +54,4 @@ if uploaded_file is not None and model:
         if helmet_count < person_count:
             st.error("⚠️ WARNING: Workers without helmets detected!")
         else:
-            st.success("🎉 All safe!")
+            st.success("🎉 All safe!")s
