@@ -1,5 +1,4 @@
 import streamlit as st
-import cv2
 import numpy as np
 from PIL import Image
 import os
@@ -53,7 +52,7 @@ if model is not None:
         with col1:
             st.image(uploaded_file, caption="Original Image", use_container_width=True)
         
-        # Get the annotated image
+        # Get the annotated image (Ultralytics returns numpy array)
         annotated_img = results[0].plot()
         
         with col2:
@@ -70,9 +69,10 @@ if model is not None:
             
             for box in boxes:
                 cls_id = int(box.cls[0])
-                if class_names[cls_id].lower() == 'person':
+                class_name = class_names[cls_id].lower()
+                if class_name == 'person':
                     person_count += 1
-                elif 'helmet' in class_names[cls_id].lower():
+                elif 'helmet' in class_name:
                     helmet_count += 1
             
             st.success(f"📊 **Results:** {person_count} persons detected | {helmet_count} helmets detected")
