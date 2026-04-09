@@ -6,11 +6,10 @@ st.set_page_config(page_title="Helmet Safety Detection", layout="wide")
 st.title("🪖 Real-time Construction Site Safety Monitor")
 st.markdown("Upload an image to detect helmets and people")
 
-# Set environment variables before importing ultralytics
+# Set environment variables
 os.environ['OPENCV_IO_ENABLE_OPENEXR'] = '1'
 os.environ['QT_QPA_PLATFORM'] = 'offscreen'
 
-# Import ultralytics
 from ultralytics import YOLO
 
 @st.cache_resource
